@@ -1,0 +1,33 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: example-hpa1
+spec:
+  behavior:
+    scaleUp:
+        stabilizationWindowSeconds: 600
+        policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 600
+    scaleDown:
+        stabilizationWindowSeconds: 600
+        policies:
+        - type: Percent
+          value: 20
+          periodSeconds: 600
+
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: apache
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+      # Continuous 10-minute strategy
